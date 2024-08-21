@@ -1,13 +1,15 @@
+import 'bootstrap/dist/css/bootstrap.min.css'; // Nhập Bootstrap CSS
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Nhập Bootstrap js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import UserInterface from './components/userInterface/userInterface.js';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <UserInterface />
   </React.StrictMode>
 );
 
