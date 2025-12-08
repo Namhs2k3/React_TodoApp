@@ -1,0 +1,100 @@
+# =====================================================
+# GLOBAL
+# =====================================================
+node_modules/
+dist/
+build/
+tmp/
+temp/
+*.log
+*.DS_Store
+Thumbs.db
+
+# =====================================================
+# ANGULAR FRONTEND
+# =====================================================
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.angular/cache/
+Frontend/.sass-cache/
+Frontend/.cache/
+Frontend/.env
+Frontend/.env.local
+Frontend/*.tgz
+
+# Angular build artifacts
+*.ngsummary.json
+*.ngfactory.ts
+*.shim.ts
+
+# =====================================================
+# .NET BACKEND
+# =====================================================
+
+# Build
+Backend/**/bin/
+Backend/**/obj/
+*.user
+*.rsuser
+*.suo
+*.cache
+*.pdb
+
+# Entity Framework
+Backend/**/Migrations/*.Designer.cs
+Backend/**/Migrations/*Snapshot.cs
+
+# VS / Rider
+.vs/
+.idea/
+*.sln.iml
+
+# Publish outputs
+publish/
+wwwroot/dist/
+
+# Sensitive configs
+appsettings.Development.json
+appsettings.Local.json
+
+# =====================================================
+# TEST PROJECTS
+# =====================================================
+**/TestResults/
+**/Coverage/
+**/TestOutput/
+**/TestAttachments/
+
+# =====================================================
+# OS FILES
+# =====================================================
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# =====================================================
+# EDITORS
+# =====================================================
+.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# =====================================================
+# NPM / PNPM / YARN LOCK
+# =====================================================
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# =====================================================
+# MISC
+# =====================================================
+*.zip
+*.rar
+*.7z
+*.tmp
+*.bak

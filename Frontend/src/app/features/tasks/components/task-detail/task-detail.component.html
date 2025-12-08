@@ -1,0 +1,33 @@
+<div class="container mt-4" *ngIf="task">
+  <div class="card">
+    <div class="card-header">
+      <h3>{{ task.title }}</h3>
+    </div>
+    <div class="card-body">
+      <p class="card-text">{{ task.description }}</p>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          <strong>Status: </strong> 
+          <span class="badge" [ngClass]="{
+            'bg-secondary': task.status === 1,
+            'bg-warning': task.status === 2,
+            'bg-success': task.status === 3
+          }">
+            {{ task.statusName }}
+          </span>
+        </li>
+        <li class="list-group-item"><strong>Priority:</strong> {{ task.priority }}</li>
+        <li class="list-group-item"><strong>Due Date:</strong> {{ task.dueDate | date: 'MM/dd/yyyy' }}</li>
+        <li class="list-group-item"><strong>Created:</strong> {{ task.createdAt | date: 'MM/dd/yyyy' }}</li>
+      </ul>
+      <a routerLink="/tasks" class="btn btn-secondary mt-3">Back to List</a>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="text-center">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+

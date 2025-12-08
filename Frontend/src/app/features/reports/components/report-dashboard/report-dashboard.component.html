@@ -1,0 +1,45 @@
+<div class="container mt-4">
+  <h2>Task Statistics</h2>
+  
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading" class="row mt-4">
+    <div class="col-md-3 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Total</h5>
+          <h2 class="text-primary">{{ statistics.total }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Todo</h5>
+          <h2 class="text-secondary">{{ statistics.todo }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">In Progress</h5>
+          <h2 class="text-warning">{{ statistics.inProgress }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Done</h5>
+          <h2 class="text-success">{{ statistics.done }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
