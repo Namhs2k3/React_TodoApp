@@ -23,7 +23,7 @@ export class TaskFormComponent implements OnInit {
     description: '',
     status: 1,
     priority: 1,
-    dueDate: undefined
+    dueDate: new Date().toISOString().split('T')[0]
   };
 
   constructor(
@@ -87,6 +87,12 @@ export class TaskFormComponent implements OnInit {
 
   onCancel(): void {
     this.cancelled.emit();
+  }
+
+  isValidDate(dateStr: string | undefined): boolean {
+    if (!dateStr) return false;
+    const d = new Date(dateStr);
+    return !isNaN(d.getTime());
   }
 }
 

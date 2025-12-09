@@ -11,8 +11,11 @@
       minlength="3"
       #title="ngModel">
     <div *ngIf="title.invalid && title.touched" class="text-danger">
-      <small *ngIf="title.errors?.['required']">Title is required</small>
-      <small *ngIf="title.errors?.['minlength']">Title must be at least 3 characters</small>
+      <small *ngIf="title.errors?.['required']">*Title is required</small>
+      <small *ngIf="title.errors?.['minlength']">*Title must be at least 3 characters</small>
+    </div>
+    <div class="text-danger" *ngIf="model.title && model.title.length > 200">
+      <small>*Title must not exceed 200 characters</small>
     </div>
   </div>
 
@@ -24,6 +27,9 @@
       name="description"
       [(ngModel)]="model.description"
       rows="3"></textarea>
+    <div class="text-danger" *ngIf="model.description && model.description.length > 1000">
+      <small>*Description must not exceed 1000 characters</small>
+    </div>
   </div>
 
   <div class="mb-3">
@@ -61,13 +67,16 @@
       id="dueDate"
       name="dueDate"
       [(ngModel)]="model.dueDate">
+      <div class="text-danger" *ngIf="!isValidDate(model.dueDate)">
+        <small>*Due Date is not a valid date</small>
+      </div>
   </div>
 
   <div class="d-flex justify-content-end gap-2">
     <button type="button" class="btn btn-secondary" (click)="onCancel()">
       Cancel
     </button>
-    <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid">
+    <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid || (model.title && model.title.length > 200) || (model.description && model.description.length > 1000) || !isValidDate(model.dueDate)">
       {{ task?.id ? 'Update' : 'Create' }}
     </button>
   </div>
