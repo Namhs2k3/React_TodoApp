@@ -98,3 +98,6 @@ Thumbs.db
 *.7z
 *.tmp
 *.bak
+
+
+test-results

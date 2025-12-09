@@ -26,7 +26,7 @@ public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, TaskD
             Description = request.Description,
             Status = TaskStatus.Todo,
             DueDate = request.DueDate,
-            Priority = request.Priority,
+            Priority = (int)request.Priority,
             CreatedAt = DateTime.UtcNow
         };
 

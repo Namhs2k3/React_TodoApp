@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using TaskManagement.Application.Common.Helpers;
 using TaskManagement.Application.DTOs;
 using TaskManagement.Application.Interfaces.Repositories;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
@@ -28,20 +29,14 @@ public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, TaskD
         task.Description = request.Description;
         task.Status = (TaskStatus)request.Status;
         task.DueDate = request.DueDate;
-        task.Priority = request.Priority;
+        task.Priority = (int)request.Priority;
         task.UpdatedAt = DateTime.UtcNow;
 
         await _repository.UpdateAsync(task);
         await _repository.SaveChangesAsync(cancellationToken);
 
         var dto = _mapper.Map<TaskDto>(task);
-        dto.StatusName = dto.Status switch
-        {
-            1 => "Todo",
-            2 => "In Progress",
-            3 => "Done",
-            _ => "Unknown"
-        };
+        dto.StatusName = MapTaskStatusName.ToStatusName(dto.Status);
 
         return dto;
     }

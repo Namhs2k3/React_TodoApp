@@ -6,6 +6,7 @@ using TaskManagement.Application.Interfaces.Repositories;
 using TaskManagement.Domain.Entities;
 using TaskStatus = TaskManagement.Domain.Enums.TaskStatus;
 using Xunit;
+using TaskManagement.Domain.Enums;
 
 namespace TaskManagement.Application.Tests.Features.Tasks.Commands;
 
@@ -41,8 +42,8 @@ public class UpdateTaskCommandHandlerTests
             Id = 1,
             Title = "Updated Title",
             Description = "Updated Description",
-            Status = 2, // InProgress
-            Priority = 2,
+            Status = TaskStatus.InProgress,
+            Priority = TaskPriority.Medium,
             DueDate = DateTime.UtcNow.AddDays(5)
         };
 
@@ -73,7 +74,7 @@ public class UpdateTaskCommandHandlerTests
         result.Should().NotBeNull();
         result.Title.Should().Be(command.Title);
         result.Description.Should().Be(command.Description);
-        result.Status.Should().Be(2);
+        result.Status.Should().Be(TaskStatus.InProgress);
         existingTask.Status.Should().Be(TaskStatus.InProgress);
         existingTask.UpdatedAt.Should().NotBeNull();
         _repositoryMock.Verify(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()), Times.Once);

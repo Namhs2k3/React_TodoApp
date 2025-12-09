@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using TaskManagement.Application.Common.Helpers;
 using TaskManagement.Application.DTOs;
 using TaskManagement.Application.Interfaces.Repositories;
 
@@ -24,13 +25,7 @@ public class GetTaskListQueryHandler : IRequestHandler<GetTaskListQuery, List<Ta
         // Map status name
         foreach (var dto in taskDtos)
         {
-            dto.StatusName = dto.Status switch
-            {
-                1 => "Todo",
-                2 => "In Progress",
-                3 => "Done",
-                _ => "Unknown"
-            };
+            dto.StatusName = MapTaskStatusName.ToStatusName(dto.Status);
         }
         
         return taskDtos.OrderBy(x => x.Id).ToList();
