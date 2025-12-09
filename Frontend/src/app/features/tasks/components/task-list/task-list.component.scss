@@ -2,14 +2,6 @@
   background-color: rgba(0, 123, 255, 0.075);
 }
 
-.overdue {
-  color: #dc3545 !important;
-}
-
-.due-soon {
-  color: #e2ab06 !important;
-}
-
 .modal-backdrop {
   background-color: rgba(0, 0, 0, 0.45);
 }
@@ -17,23 +9,5 @@
 .modal-content {
   border: none;
   box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-}
-
-.badge.priority-low {
-  color: #198754;
-  border: 1px solid #198754 !important;
-  background-color: rgba(25, 135, 84, 0.08);
-}
-
-.badge.priority-medium {
-  color: #e2ab06;
-  border: 1px solid #e2ab06 !important;
-  background-color: rgba(226, 171, 6, 0.08);
-}
-
-.badge.priority-high {
-  color: #dc3545;
-  border: 1px solid #dc3545 !important;
-  background-color: rgba(220, 53, 69, 0.08);
 }
 

@@ -47,7 +47,7 @@
               {{ task.status | taskStatus }}
             </span>
           </td>
-          <td [appHighlightOverdue]="task.dueDate">{{ task.dueDate | date: 'dd/MM/yyyy' }}</td>
+          <td [appHighlightOverdue]="task.dueDate">{{ task.dueDate | date: 'MM/dd/yyyy' }}</td>
           <td>
             <span class="badge border" [appPriorityStyle]="task.priority">
               {{ task.priority | priorityLabel }}
@@ -92,7 +92,7 @@
           }">
             {{ task.status | taskStatus }}
           </span>
-          <small class="text-muted" [appHighlightOverdue]="task.dueDate">{{ task.dueDate | date: 'dd/MM/yyyy' }}</small>
+          <small class="text-muted" [appHighlightOverdue]="task.dueDate">{{ task.dueDate | date: 'MM/dd/yyyy' }}</small>
         </div>
         <div class="mt-2">
           <span class="badge border" [appPriorityStyle]="task.priority">

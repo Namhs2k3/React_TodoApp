@@ -4,11 +4,14 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Task } from '../../../../core/models/task.model';
 import { TaskService } from '../../../../core/services/task.service';
 import { TaskStateService } from '../../services/task-state.service';
+import { PriorityStyleDirective } from "../../../../shared/directives/priority-style.directive";
+import { PriorityPipe } from '../../../../shared/pipes/priority.pipe';
+import { HighlightOverdueDirective } from "../../../../shared/directives/highlight-overdue.directive";
 
 @Component({
   selector: 'app-task-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PriorityStyleDirective, PriorityPipe, HighlightOverdueDirective],
   templateUrl: './task-detail.component.html',
   styleUrls: ['./task-detail.component.scss']
 })
@@ -27,12 +30,6 @@ export class TaskDetailComponent implements OnInit {
     if (id) {
       this.loadTask(+id);
     }
-
-    this.taskStateService.selectedTask$.subscribe(task => {
-      if (task) {
-        this.task = task;
-      }
-    });
   }
 
   loadTask(id: number): void {
