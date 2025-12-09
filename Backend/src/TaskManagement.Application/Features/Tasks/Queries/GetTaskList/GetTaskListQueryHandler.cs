@@ -33,7 +33,7 @@ public class GetTaskListQueryHandler : IRequestHandler<GetTaskListQuery, List<Ta
             };
         }
         
-        return taskDtos;
+        return taskDtos.OrderBy(x => x.Id).ToList();
     }
 }
 

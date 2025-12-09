@@ -2,10 +2,13 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Application = TaskManagement.Application;
 using TaskManagement.Application.Common.Mappings;
+using TaskManagement.Application.Common.Behaviors;
 using TaskManagement.Infrastructure.Data;
 using TaskManagement.Infrastructure.Data.Repositories;
 using TaskManagement.Application.Interfaces.Repositories;
 using Domain = TaskManagement.Domain;
+using FluentValidation;
+using MediatR;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +22,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseInMemoryDatabase("TaskManagementDb"));
 
+// FluentValidation
+builder.Services.AddValidatorsFromAssembly(typeof(Application.Features.Tasks.Queries.GetTaskList.GetTaskListQueryHandler).Assembly);
+
 // MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Application.Features.Tasks.Queries.GetTaskList.GetTaskListQueryHandler).Assembly));
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Application.Features.Tasks.Queries.GetTaskList.GetTaskListQueryHandler).Assembly);
+    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+});
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
