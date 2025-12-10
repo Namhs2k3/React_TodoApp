@@ -15,22 +15,28 @@ describe('ConfirmDialogService', () => {
     });
   });
 
-  it('open() phát sự kiện và resolve Promise với giá trị true', async () => {
-    const promise = service.open('Delete item?');
+  it('open() emits event and resolves Promise with value true', async () => {
+    const promise = service.open('Are you sure you want to delete this item?');
 
-    // Đảm bảo request được phát ra
+    // Ensure request is emitted
     expect(receivedRequest).toBeTruthy();
-    expect(receivedRequest?.message).toBe('Delete item?');
+    expect(receivedRequest?.message).toBe('Are you sure you want to delete this item?');
 
-    // Gọi resolve thủ công như ConfirmDialogComponent sẽ làm
+    // Manually call resolve as ConfirmDialogComponent will do
     receivedRequest?.resolve(true);
 
     await expectAsync(promise).toBeResolvedTo(true);
   });
 
-  it('open() có thể resolve false', async () => {
-    const promise = service.open('Cancel action?');
+  it('open() can resolve false', async () => {
+    const promise = service.open('Are you sure you want to cancel this action?');
+
+    // Ensure request is emitted
+    expect(receivedRequest).toBeTruthy();
+    expect(receivedRequest?.message).toBe('Are you sure you want to cancel this action?');
+
     receivedRequest?.resolve(false);
+
     await expectAsync(promise).toBeResolvedTo(false);
   });
 });

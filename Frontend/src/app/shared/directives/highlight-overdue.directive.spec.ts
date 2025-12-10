@@ -27,7 +27,7 @@ describe('HighlightOverdueDirective', () => {
     return fixture.nativeElement.querySelector('span');
   }
 
-  it('thêm class "overdue" khi dueDate là ngày quá khứ', () => {
+  it('adds class "overdue" when dueDate is in the past', () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     host.dueDate = yesterday.toISOString();
@@ -39,7 +39,7 @@ describe('HighlightOverdueDirective', () => {
     expect(span.classList.contains('due-soon')).toBeFalse();
   });
 
-  it('thêm class "due-soon" khi dueDate là hôm nay hoặc trong 24h', () => {
+  it('adds class "due-soon" when dueDate is today or within 24 hours', () => {
     const today = new Date();
     host.dueDate = today.toISOString();
 
@@ -50,7 +50,7 @@ describe('HighlightOverdueDirective', () => {
     expect(span.classList.contains('overdue')).toBeFalse();
   });
 
-  it('không thêm class nếu dueDate ở tương lai xa hơn 1 ngày', () => {
+  it('does not add class if dueDate is more than 1 day in the future', () => {
     const future = new Date();
     future.setDate(future.getDate() + 3);
     host.dueDate = future.toISOString();

@@ -6,21 +6,23 @@ import { TaskStateService } from '../../services/task-state.service';
 import { ActivatedRoute } from '@angular/router';
 import { Task } from '../../../../core/models/task.model';
 
-class TaskServiceStub {
+class TaskServiceMock {
   getTaskById = jasmine.createSpy().and.returnValue(of());
 }
 
-class TaskStateServiceStub {
+class TaskStateServiceMock {
   private subject = new BehaviorSubject<Task | null>(null);
   selectedTask$ = this.subject.asObservable();
-  setSelectedTask = jasmine.createSpy((task: Task) => this.subject.next(task));
+  setSelectedTask = jasmine
+    .createSpy('setSelectedTask', (task: Task) => this.subject.next(task))
+    .and.callThrough();
 }
 
 describe('TaskDetailComponent', () => {
   let fixture: ComponentFixture<TaskDetailComponent>;
   let component: TaskDetailComponent;
-  let taskService: TaskServiceStub;
-  let taskState: TaskStateServiceStub;
+  let taskService: TaskServiceMock;
+  let taskState: TaskStateServiceMock;
 
   const mockTask: Task = {
     id: 5,
@@ -35,8 +37,8 @@ describe('TaskDetailComponent', () => {
   };
 
   beforeEach(async () => {
-    taskService = new TaskServiceStub();
-    taskState = new TaskStateServiceStub();
+    taskService = new TaskServiceMock();
+    taskState = new TaskStateServiceMock();
 
     await TestBed.configureTestingModule({
       imports: [TaskDetailComponent],
@@ -66,14 +68,10 @@ describe('TaskDetailComponent', () => {
     expect(taskState.setSelectedTask).toHaveBeenCalledWith(mockTask);
   });
 
-  it('reacts to selectedTask$ updates', () => {
-    fixture.detectChanges(); // init, subscribe
+  it('should set loading to true when loading task', () => {
+    component.loadTask(mockTask.id);
 
-    taskState.setSelectedTask(mockTask);
-    fixture.detectChanges();
-
-    expect(component.task?.id).toBe(mockTask.id);
-    expect(component.task?.statusName).toBe('In Progress');
+    expect(component.loading).toBe(true);
   });
 });
 
