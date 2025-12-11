@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { Task } from '../../../../core/models/task.model';
 import { TaskService } from '../../../../core/services/task.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-task-form',
@@ -13,7 +14,7 @@ import { switchMap } from 'rxjs/operators';
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.scss']
 })
-export class TaskFormComponent implements OnInit {
+export class TaskFormComponent implements OnInit, OnDestroy {
   @Input() task?: Task;
   @Output() saved = new EventEmitter<Task>();
   @Output() cancelled = new EventEmitter<void>();
@@ -25,6 +26,7 @@ export class TaskFormComponent implements OnInit {
     priority: 1,
     dueDate: new Date().toISOString().split('T')[0]
   };
+  private destroy$ = new Subject<void>();
 
   constructor(
     private taskService: TaskService,
@@ -38,6 +40,11 @@ export class TaskFormComponent implements OnInit {
         dueDate: this.task.dueDate ? this.task.dueDate.slice(0, 10) : undefined
       };
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onSubmit(form: any): void {
@@ -58,7 +65,8 @@ export class TaskFormComponent implements OnInit {
         .pipe(
           switchMap(() => {
             return this.taskService.getTaskById(this.task!.id);
-          })
+          }),
+          takeUntil(this.destroy$)
         )
         .subscribe({
           next: (updatedTask) => {
@@ -72,6 +80,7 @@ export class TaskFormComponent implements OnInit {
     } else {
       // Create
       this.taskService.createTask(taskData)
+        .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (newTask) => {
             this.notificationService.showSuccess('Task created successfully');

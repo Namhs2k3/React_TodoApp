@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
 import { forkJoin } from 'rxjs';
 import { TaskService } from '../../../../core/services/task.service';
 import { Task } from '../../../../core/models/task.model';
@@ -11,7 +12,7 @@ import { Task } from '../../../../core/models/task.model';
   templateUrl: './report-dashboard.component.html',
   styleUrls: ['./report-dashboard.component.scss']
 })
-export class ReportDashboardComponent implements OnInit {
+export class ReportDashboardComponent implements OnInit, OnDestroy {
   statistics = {
     total: 0,
     todo: 0,
@@ -19,6 +20,7 @@ export class ReportDashboardComponent implements OnInit {
     done: 0
   };
   loading = false;
+  private destroy$ = new Subject<void>();
 
   constructor(private taskService: TaskService) {}
 
@@ -26,24 +28,31 @@ export class ReportDashboardComponent implements OnInit {
     this.loadStatistics();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadStatistics(): void {
     this.loading = true;
     
     forkJoin({
       tasks: this.taskService.getTasks()
-    }).subscribe({
-      next: (result) => {
-        const tasks = result.tasks;
-        this.statistics.total = tasks.length;
-        this.statistics.todo = tasks.filter(t => t.status === 1).length;
-        this.statistics.inProgress = tasks.filter(t => t.status === 2).length;
-        this.statistics.done = tasks.filter(t => t.status === 3).length;
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-      }
-    });
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (result) => {
+          const tasks = result.tasks;
+          this.statistics.total = tasks.length;
+          this.statistics.todo = tasks.filter(t => t.status === 1).length;
+          this.statistics.inProgress = tasks.filter(t => t.status === 2).length;
+          this.statistics.done = tasks.filter(t => t.status === 3).length;
+          this.loading = false;
+        },
+        error: () => {
+          this.loading = false;
+        }
+      });
   }
 }
 
