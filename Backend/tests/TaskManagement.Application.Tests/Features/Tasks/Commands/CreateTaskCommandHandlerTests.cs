@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using TaskManagement.Application.Features.Tasks.Commands.CreateTask;
 using TaskManagement.Application.Interfaces.Repositories;
+using TaskManagement.Domain.Enums;
 using Xunit;
 
 namespace TaskManagement.Application.Tests.Features.Tasks.Commands;
@@ -28,7 +29,7 @@ public class CreateTaskCommandHandlerTests
         {
             Title = "Test Task",
             Description = "Test Description",
-            Priority = 1,
+            Priority = TaskPriority.Low,
             DueDate = DateTime.UtcNow.AddDays(7)
         };
 
@@ -38,7 +39,7 @@ public class CreateTaskCommandHandlerTests
             Title = command.Title,
             Description = command.Description,
             Status = Domain.Enums.TaskStatus.Todo,
-            Priority = command.Priority,
+            Priority = (int)command.Priority,
             DueDate = command.DueDate,
             CreatedAt = DateTime.UtcNow
         };
@@ -48,7 +49,7 @@ public class CreateTaskCommandHandlerTests
             Id = 1,
             Title = command.Title,
             Description = command.Description,
-            Status = 1,
+            Status = Domain.Enums.TaskStatus.Todo,
             StatusName = "Todo",
             Priority = command.Priority,
             DueDate = command.DueDate
@@ -68,7 +69,7 @@ public class CreateTaskCommandHandlerTests
         result.Should().NotBeNull();
         result.Title.Should().Be(command.Title);
         result.Description.Should().Be(command.Description);
-        result.Status.Should().Be(1); // Todo
+        result.Status.Should().Be(Domain.Enums.TaskStatus.Todo); // Todo
         result.StatusName.Should().Be("Todo");
         _repositoryMock.Verify(r => r.AddAsync(It.IsAny<Domain.Entities.TaskItem>()), Times.Once);
         _repositoryMock.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

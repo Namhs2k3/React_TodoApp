@@ -103,5 +103,11 @@ export class TaskFormComponent implements OnInit, OnDestroy {
     const d = new Date(dateStr);
     return !isNaN(d.getTime());
   }
+
+  isContainInvalidCharacters(content: string): boolean {
+    const invalidChars = ['!', '@', '~', '%'];
+    return invalidChars.some(char => content.includes(char));
+  }
+  
 }
 

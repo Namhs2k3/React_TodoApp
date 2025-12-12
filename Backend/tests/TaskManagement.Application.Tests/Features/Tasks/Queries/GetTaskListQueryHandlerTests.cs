@@ -50,8 +50,8 @@ public class GetTaskListQueryHandlerTests
 
         var taskDtos = new List<Application.DTOs.TaskDto>
         {
-            new Application.DTOs.TaskDto { Id = 1, Title = "Task 1", Status = 1 },
-            new Application.DTOs.TaskDto { Id = 2, Title = "Task 2", Status = 2 }
+            new Application.DTOs.TaskDto { Id = 1, Title = "Task 1", Status = Domain.Enums.TaskStatus.Todo },
+            new Application.DTOs.TaskDto { Id = 2, Title = "Task 2", Status = Domain.Enums.TaskStatus.InProgress }
         };
 
         _repositoryMock.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
