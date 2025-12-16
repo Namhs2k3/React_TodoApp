@@ -1,0 +1,11 @@
+<div class="toast-wrapper">
+  <div
+       *ngFor="let toast of toasts$ | async"
+       class="toast-item"
+       [ngClass]="toast.type"
+       role="status"
+       aria-live="polite">
+    <div class="me-2">{{ toast.message }}</div>
+    <button class="btn-close" type="button" (click)="dismiss(toast)"></button>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+{
+  "*.ts": ["prettier --write"],
+  "*.js": ["prettier --write"],
+  "*.scss": ["prettier --write"],
+  "*.json": ["prettier --write"],
+  "*.html": ["js-beautify --config .jsbeautifyrc --type html --replace"]
+}

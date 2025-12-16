@@ -1,0 +1,141 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Task List</h2>
+    <button #addBtn class="btn btn-primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle"></i> Add New
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Desktop Table View -->
+  <div class="table-responsive d-none d-md-block" *ngIf="!loading && !error">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Due Date</th>
+          <th>Priority</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of tasks"
+            (click)="onSelectTask(task)"
+            [class.table-active]="selectedTask?.id === task.id"
+            style="cursor: pointer;">
+          <td>{{ task.id }}</td>
+          <td>{{ task.title }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'bg-secondary': task.status === 1,
+              'bg-warning': task.status === 2,
+              'bg-success': task.status === 3
+            }">
+              {{ task.status | taskStatus }}
+            </span>
+          </td>
+          <td [appHighlightOverdue]="task.dueDate">{{ task.dueDate | date: 'MM/dd/yyyy' }}</td>
+          <td>
+            <span class="badge border" [appPriorityStyle]="task.priority">
+              {{ task.priority | priorityLabel }}
+            </span>
+          </td>
+          <td class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" title="Edit"
+                    (click)="onEdit(task); $event.stopPropagation()">
+              <i class="bi bi-pencil-square"></i>
+              <span class="visually-hidden">Edit</span>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" title="Delete"
+                    (click)="onDelete(task.id); $event.stopPropagation()">
+              <i class="bi bi-trash"></i>
+              <span class="visually-hidden">Delete</span>
+            </button>
+            <a routerLink="/tasks/{{ task.id }}" class="btn btn-sm btn-outline-info" title="View">
+              <i class="bi bi-eye"></i>
+              <span class="visually-hidden">View</span>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile Card View -->
+  <div class="d-md-none" *ngIf="!loading && !error">
+    <div class="card mb-3"
+         *ngFor="let task of tasks"
+         (click)="onSelectTask(task)"
+         [class.border-primary]="selectedTask?.id === task.id"
+         style="cursor: pointer;">
+      <div class="card-body">
+        <h5 class="card-title">{{ task.title }}</h5>
+        <p class="card-text">{{ task.description }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge" [ngClass]="{
+            'bg-secondary': task.status === 1,
+            'bg-warning': task.status === 2,
+            'bg-success': task.status === 3
+          }">
+            {{ task.status | taskStatus }}
+          </span>
+          <small class="text-muted" [appHighlightOverdue]="task.dueDate">{{ task.dueDate | date: 'MM/dd/yyyy' }}</small>
+        </div>
+        <div class="mt-2">
+          <span class="badge border" [appPriorityStyle]="task.priority">
+            {{ task.priority | priorityLabel }}
+          </span>
+        </div>
+        <div class="mt-2 d-flex gap-2">
+          <button class="btn btn-sm btn-outline-primary" title="Edit"
+                  (click)="onEdit(task); $event.stopPropagation()">
+            <i class="bi bi-pencil-square"></i>
+            <span class="visually-hidden">Edit</span>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" title="Delete"
+                  (click)="onDelete(task.id); $event.stopPropagation()">
+            <i class="bi bi-trash"></i>
+            <span class="visually-hidden">Delete</span>
+          </button>
+          <a routerLink="/tasks/{{ task.id }}" class="btn btn-sm btn-outline-info" title="View">
+            <i class="bi bi-eye"></i>
+            <span class="visually-hidden">View</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Form -->
+  <div class="modal-backdrop fade show" *ngIf="showForm"></div>
+  <div class="modal d-block" tabindex="-1" role="dialog" *ngIf="showForm">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingTask ? 'Edit Task' : 'Add Task' }}</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="onFormCancelled()"></button>
+        </div>
+        <div class="modal-body">
+          <app-task-form
+                         [task]="editingTask || undefined"
+                         (saved)="onFormSaved($event)"
+                         (cancelled)="onFormCancelled()">
+          </app-task-form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

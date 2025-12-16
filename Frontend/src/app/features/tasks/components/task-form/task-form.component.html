@@ -1,0 +1,94 @@
+<form #taskForm="ngForm" (ngSubmit)="onSubmit(taskForm)">
+  <div class="mb-3">
+    <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+    <input
+           type="text"
+           class="form-control"
+           id="title"
+           name="title"
+           [(ngModel)]="model.title"
+           required
+           minlength="3"
+           #title="ngModel">
+    <div *ngIf="title.invalid && title.touched" class="text-danger">
+      <small *ngIf="title.errors?.['required']">*Title is required</small>
+      <small *ngIf="title.errors?.['minlength']">*Title must be at least 3 characters</small>
+    </div>
+    <div class="text-danger" *ngIf="model.title && model.title.length > 200">
+      <small>*Title must not exceed 200 characters</small>
+    </div>
+    <div class="text-danger" *ngIf="model.title && isContainInvalidCharacters(model.title)">
+      *Title cannot contain !, &#64;, ~, %
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="description" class="form-label">Description</label>
+    <textarea
+              class="form-control"
+              id="description"
+              name="description"
+              [(ngModel)]="model.description"
+              rows="3"></textarea>
+    <div class="text-danger" *ngIf="model.description && model.description.length > 1000">
+      <small>*Description must not exceed 1000 characters</small>
+    </div>
+    <div class="text-danger" *ngIf="model.description && isContainInvalidCharacters(model.description)">
+      *Description cannot contain !, &#64;, ~, %
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="status" class="form-label">Status</label>
+    <select
+            class="form-select"
+            id="status"
+            name="status"
+            [(ngModel)]="model.status">
+      <option [value]="1">Todo</option>
+      <option [value]="2">In Progress</option>
+      <option [value]="3">Done</option>
+    </select>
+  </div>
+
+
+  <div class="mb-3">
+    <label for="priority" class="form-label">Priority</label>
+    <select
+            class="form-select"
+            id="priority"
+            name="priority"
+            [(ngModel)]="model.priority">
+      <option [value]="1">Low</option>
+      <option [value]="2">Medium</option>
+      <option [value]="3">High</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label for="dueDate" class="form-label">Due Date</label>
+    <input
+           type="date"
+           class="form-control"
+           id="dueDate"
+           name="dueDate"
+           [(ngModel)]="model.dueDate">
+    <div class="text-danger" *ngIf="!isValidDate(model.dueDate)">
+      <small>*Due Date is not a valid date</small>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()">
+      Cancel
+    </button>
+    <button type="submit"
+            class="btn btn-primary"
+            [disabled]="taskForm.invalid || (model.title && model.title.length > 200) || (model.description && model.description.length > 1000) 
+            || !isValidDate(model.dueDate)
+            || model.title && isContainInvalidCharacters(model.title)
+            || model.description && isContainInvalidCharacters(model.description)">
+      {{ task?.id ? 'Update' : 'Create' }}
+    </button>
+  </div>
+</form>

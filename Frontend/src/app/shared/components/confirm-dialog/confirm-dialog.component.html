@@ -1,0 +1,12 @@
+<div class="backdrop" *ngIf="active">
+  <div class="dialog card shadow">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Confirm</h5>
+      <p class="mb-4">{{ message }}</p>
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-secondary btn-sm" (click)="handle(false)">Cancel</button>
+        <button class="btn btn-danger btn-sm" (click)="handle(true)">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
