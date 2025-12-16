@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angu
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 import { Task } from '../../../../core/models/task.model';
 import { TaskService } from '../../../../core/services/task.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -27,6 +26,10 @@ export class TaskFormComponent implements OnInit, OnDestroy {
     dueDate: new Date().toISOString().split('T')[0]
   };
   private destroy$ = new Subject<void>();
+  private lastTasksSnapshot: Task[] = [];
+  private pendingAction: 'create' | 'update' | null = null;
+  private pendingTaskId: number | null = null;
+  private lastSubmittedForm: any;
 
   constructor(
     private taskService: TaskService,
@@ -40,6 +43,52 @@ export class TaskFormComponent implements OnInit, OnDestroy {
         dueDate: this.task.dueDate ? this.task.dueDate.slice(0, 10) : undefined
       };
     }
+
+    this.taskService.tasks$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(tasks => {
+        if (this.pendingAction === 'create') {
+          const newTask = tasks.find(task =>
+            !this.lastTasksSnapshot.some(prev => prev.id === task.id)
+          );
+
+          if (newTask) {
+            this.notificationService.showSuccess('Task created successfully');
+            this.saved.emit(newTask);
+            this.lastSubmittedForm?.resetForm();
+            this.resetModel();
+            this.pendingAction = null;
+            this.pendingTaskId = null;
+          }
+        } else if (this.pendingAction === 'update' && this.pendingTaskId !== null) {
+          const updatedTask = tasks.find(task => task.id === this.pendingTaskId);
+
+          if (updatedTask) {
+            this.notificationService.showSuccess('Task updated successfully');
+            this.saved.emit(updatedTask);
+            this.pendingAction = null;
+            this.pendingTaskId = null;
+          }
+        }
+
+        this.lastTasksSnapshot = [...tasks];
+      });
+
+    this.taskService.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(err => {
+        if (!err) {
+          return;
+        }
+
+        const message = typeof err === 'string'
+          ? err
+          : err.message ?? 'Unable to process request. Please try again.';
+
+        this.notificationService.showError(message);
+        this.pendingAction = null;
+        this.pendingTaskId = null;
+      });
   }
 
   ngOnDestroy(): void {
@@ -61,36 +110,15 @@ export class TaskFormComponent implements OnInit, OnDestroy {
     };
 
     if (this.task?.id) {
-      this.taskService.updateTask(this.task.id, taskData)
-        .pipe(
-          switchMap(() => {
-            return this.taskService.getTaskById(this.task!.id);
-          }),
-          takeUntil(this.destroy$)
-        )
-        .subscribe({
-          next: (updatedTask) => {
-            this.notificationService.showSuccess('Task updated successfully');
-            this.saved.emit(updatedTask);
-          },
-          error: (err) => {
-            this.notificationService.showError('Unable to update task. Please try again.');
-          }
-        });
+      this.pendingAction = 'update';
+      this.pendingTaskId = this.task.id;
+      this.lastSubmittedForm = form;
+      this.taskService.updateTask(this.task.id, taskData);
     } else {
-      // Create
-      this.taskService.createTask(taskData)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (newTask) => {
-            this.notificationService.showSuccess('Task created successfully');
-            this.saved.emit(newTask);
-            form.resetForm();
-          },
-          error: (err) => {
-            this.notificationService.showError('Unable to create task. Please try again.');
-          }
-        });
+      this.pendingAction = 'create';
+      this.pendingTaskId = null;
+      this.lastSubmittedForm = form;
+      this.taskService.createTask(taskData);
     }
   }
 
@@ -108,6 +136,15 @@ export class TaskFormComponent implements OnInit, OnDestroy {
     const invalidChars = ['!', '@', '~', '%'];
     return invalidChars.some(char => content.includes(char));
   }
-  
+
+  private resetModel(): void {
+    this.model = {
+      title: '',
+      description: '',
+      status: 1,
+      priority: 1,
+      dueDate: new Date().toISOString().split('T')[0]
+    };
+  }
 }
 

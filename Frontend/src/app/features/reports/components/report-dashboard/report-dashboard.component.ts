@@ -37,7 +37,7 @@ export class ReportDashboardComponent implements OnInit, OnDestroy {
     this.loading = true;
     
     forkJoin({
-      tasks: this.taskService.getTasks()
+      tasks: this.taskService.tasks$
     })
       .pipe(takeUntil(this.destroy$))
       .subscribe({

@@ -35,6 +35,8 @@ export class TaskListComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedTask: Task | null = null;
   editingTask: Task | null = null;
   showForm = false;
+  private previousTasks: Task[] = [];
+  private pendingDeleteId: number | null = null;
   private destroy$ = new Subject<void>();
   @ViewChild('addBtn') addBtn?: ElementRef<HTMLButtonElement>;
 
@@ -47,16 +49,45 @@ export class TaskListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.loadTasks();
-    
+
     combineLatest([
-      this.taskService.getTasks(),
+      this.taskService.tasks$,
       this.taskStateService.selectedTask$
     ]).pipe(
       takeUntil(this.destroy$)
     ).subscribe(([tasks, selectedTask]) => {
+      if (
+        this.pendingDeleteId !== null &&
+        this.previousTasks.some(t => t.id === this.pendingDeleteId) &&
+        !tasks.some(t => t.id === this.pendingDeleteId)
+      ) {
+        this.notificationService.showSuccess('Task deleted successfully.');
+        this.pendingDeleteId = null;
+      }
+
       this.tasks = tasks;
       this.selectedTask = selectedTask;
+      this.previousTasks = [...tasks];
     });
+
+    this.taskService.loading$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(loading => this.loading = loading);
+
+    this.taskService.error$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(err => {
+        if (err) {
+          const message = typeof err === 'string'
+            ? err
+            : err.message ?? 'Unable to load task list. Please try again later.';
+
+          this.error = message;
+          this.notificationService.showError(message);
+        } else {
+          this.error = null;
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -71,38 +102,14 @@ export class TaskListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   loadTasks(): void {
-    this.loading = true;
-    this.error = null;
-
-    this.taskService.getTasks()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (tasks) => {
-          this.tasks = tasks;
-          this.loading = false;
-        },
-        error: (err) => {
-          this.error = 'Unable to load task list. Please try again later.';
-          this.loading = false;
-          this.notificationService.showError(this.error);
-        }
-      });
+    this.taskService.getTasks();
   }
 
   onDelete(id: number): void {
     this.confirmDialog.open('Are you sure you want to delete this task?').then(confirmed => {
       if (!confirmed) return;
-      this.taskService.deleteTask(id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.notificationService.showSuccess('Task deleted successfully.');
-            this.loadTasks();
-          },
-          error: () => {
-            this.notificationService.showError('Unable to delete task. Please try again later.');
-          }
-        });
+      this.pendingDeleteId = id;
+      this.taskService.deleteTask(id);
     });
   }
 
@@ -123,7 +130,6 @@ export class TaskListComponent implements OnInit, OnDestroy, AfterViewInit {
   onFormSaved(task: Task): void {
     this.showForm = false;
     this.taskStateService.setSelectedTask(task);
-    this.loadTasks();
   }
 
   onFormCancelled(): void {
