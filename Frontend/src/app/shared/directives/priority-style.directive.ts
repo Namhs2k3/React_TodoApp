@@ -40,6 +40,7 @@ export class PriorityStyleDirective implements OnChanges {
         break;
       case 3:
         this.renderer.addClass(host, "priority-high");
+
         break;
     }
   }

@@ -16,6 +16,7 @@ describe("HighlightOverdueDirective", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HighlightOverdueDirective],
+
       declarations: [HostComponent],
     }).compileComponents();
 
@@ -35,6 +36,7 @@ describe("HighlightOverdueDirective", () => {
     fixture.detectChanges();
 
     const span = getSpan();
+
     expect(span.classList.contains("overdue")).toBeTrue();
     expect(span.classList.contains("due-soon")).toBeFalse();
   });
